@@ -56,8 +56,7 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,7 +66,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
+
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -406,31 +405,8 @@ public final class RequestWalletBalanceTask {
     }
 
     private SSLSocketFactory sslTrustAllCertificates() {
-        try {
-            final SSLContext context = SSLContext.getInstance("SSL");
-            context.init(null, new TrustManager[] { TRUST_ALL_CERTIFICATES }, null);
-            return context.getSocketFactory();
-        } catch (final Exception x) {
-            throw new RuntimeException(x);
-        }
+        return (SSLSocketFactory) SSLSocketFactory.getDefault();
     }
-
-    private static final X509TrustManager TRUST_ALL_CERTIFICATES = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(final X509Certificate[] chain, final String authType)
-                throws CertificateException {
-        }
-
-        @Override
-        public void checkServerTrusted(final X509Certificate[] chain, final String authType)
-                throws CertificateException {
-        }
-
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return new X509Certificate[0];
-        }
-    };
 
     private String sslCertificateFingerprint(final Certificate certificate) {
         try {
