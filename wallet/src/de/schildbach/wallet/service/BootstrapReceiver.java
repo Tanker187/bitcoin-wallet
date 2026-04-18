@@ -58,6 +58,16 @@ public class BootstrapReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         log.info("got broadcast: " + intent);
+
+        final String action = intent.getAction();
+        if (!Intent.ACTION_BOOT_COMPLETED.equals(action) &&
+                !Intent.ACTION_MY_PACKAGE_REPLACED.equals(action) &&
+                !ACTION_DISMISS.equals(action) &&
+                !ACTION_DISMISS_FOREVER.equals(action)) {
+            log.warn("ignoring unexpected broadcast action: {}", action);
+            return;
+        }
+
         final PendingResult result = goAsync();
         executor.execute(() -> {
             org.bitcoinj.core.Context.propagate(Constants.CONTEXT);
